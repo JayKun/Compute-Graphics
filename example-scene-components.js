@@ -109,71 +109,30 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
         // The ground plane
         model_transform=mult(model_transform, translation(0, -4, 0));
         ground_origin=model_transform;
-        ground_origin=mult(ground_origin, rotation(10*Math.sin(t), 0, 0, 1));
+        //ground_origin=mult(ground_origin, rotation(30*Math.sin(t), 0, 0, 1));
         model_transform=mult(model_transform, rotation(90, 1, 0 , 0));
         model_transform=mult(model_transform, scale(20,20,20));
         this.shapes.ground.draw(graphics_state, model_transform, this.brown_clay);  
 
-        // The trunk 1
-        model_transform=mult(ground_origin, rotation(Math.sin(t), 0, 0 ,1));
+        // Trunk set up
+        model_transform=mult(ground_origin, rotation(5*Math.sin(t), 0, 0 ,1));
         model_transform=mult(model_transform, translation(0, 0.5, 0));
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 2
-        model_transform=mult(ground_origin, rotation(2*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 1.5, 0));
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 3
-        model_transform=mult(ground_origin, rotation(2.25*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 2.5, 0));
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 4
-        model_transform=mult(ground_origin, rotation(2.5*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 3.5, 0));
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 5
-        model_transform=mult(ground_origin, rotation(2.75*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 4.5, 0));        
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 6
-        model_transform=mult(ground_origin, rotation(3*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 5.5, 0));  
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 7
-        model_transform=mult(ground_origin, rotation(3.25*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 6.5, 0));  
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
-        // The trunk 8
-        model_transform=mult(ground_origin, rotation(3.5*Math.sin(t), 0, 0 ,1));
-        model_transform=mult(model_transform, translation(0, 7.5, 0));
-        model_transform=mult(model_transform, scale(-1, 1, 1));
-        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
+        model_transform=mult(model_transform, rotation(90, -1, 0, 0));
         model_transform=mult(model_transform, scale(0.2, 0.2, 1));
         this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
 
+        for (var i = 0; i < 7; i++) {
+          model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1));
+          model_transform=mult(model_transform, translation(0, 0, 0.5));
+          model_transform=mult(model_transform, rotation(5*Math.sin(t), 0, -1, 0));
+          model_transform=mult(model_transform, translation(0, 0, 0.5));
+          model_transform=mult(model_transform, scale(0.2, 0.2, 1));
+          this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
+        } 
+
         //The follicle
-        model_transform=mult(ground_origin, rotation(4*Math.sin(t), 0, 0 ,1))
-        model_transform=mult(model_transform, translation(0, 10, 0));
+        model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1));
+        model_transform=mult(model_transform, translation(0, 0, 2.5));
         model_transform=mult(model_transform, scale(-2, 2, 2));
         this.shapes.sphere.draw(graphics_state, model_transform, this.redPlastic);
 

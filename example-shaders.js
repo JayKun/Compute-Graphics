@@ -32,7 +32,7 @@ Declare_Any_Class( "Phong_Model",
           varying float dist[N_LIGHTS];
           
           vec3 phong_model_lights( vec3 N )
-            { vec3 result;
+            { vec3 result=vec3(0.0);
               for(int i = 0; i < N_LIGHTS; i++)
                 {
                   float attenuation_multiplier = 1.0 / (1.0 + attenuation_factor[i] * (dist[i] * dist[i]));
