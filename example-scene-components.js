@@ -81,6 +81,40 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
                                     purplePlastic: context.shaders_in_use["Phong_Model" ].material( Color( .9,.5,.9, 1 ), .4, .4, .8, 40 ),
                                     greyPlastic  : context.shaders_in_use["Phong_Model" ].material( Color( .5,.5,.5, 1 ), .4, .8, .4, 20 )} );
       },
+      'draw_bee'(graphics_state, model_state){
+        var t = graphics_state.animation_time/1000;
+        // Draw Bee Body
+        var model_transform=mult(model_state, translation(-4.0, 1, 10));
+        var body_origin=model_transform; 
+        model_transform=mult(model_transform, scale(1.5, 1, 1));
+        this.shapes.cube.draw(graphics_state, model_transform, this.purplePlastic);
+
+        // Draw Bee ass
+        model_transform=mult(body_origin, translation(4.0, 0, 0));
+        model_transform=mult(model_transform, scale(2.5, 1, 1));
+        this.shapes.sphere.draw(graphics_state, model_transform, this.blueGlass);
+
+        //Draw Bee Head
+        model_transform=mult(model_transform, scale(1/2.5, 1, 1));  
+        model_transform=mult(model_transform, translation(-6.5, 0, 0));
+        this.shapes.sphere.draw(graphics_state, model_transform, this.greyPlastic);
+
+        //Draw Bee Left Wing
+        var left_wing_hinge=mult(body_origin, translation(0, 1, 1));
+        left_wing_hinge=mult(left_wing_hinge, rotation(30*Math.cos(t*1000), -1, 0, 0))
+        model_transform=mult(left_wing_hinge, translation(0, 0, 3));
+        model_transform=mult(model_transform, scale(1, 0.1, 3));
+        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
+
+        //Draw Bee Right Wing
+        var right_wing_hinge=mult(body_origin, translation(0, 1, -1));
+        right_wing_hinge=mult(right_wing_hinge, rotation(30*Math.cos(t*1000), 1, 0, 0))
+        model_transform=mult(right_wing_hinge, translation(0, 0, -3));
+        model_transform=mult(model_transform, scale(1, 0.1, 3));
+        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
+
+        return body_origin;
+      },
       'draw_legs'(graphics_state, model_state, x, y, z)
       {
         var t = graphics_state.animation_time/1000;
@@ -118,59 +152,31 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
         model_transform=mult(ground_origin, rotation(5*Math.sin(t), 0, 0 ,1));
         model_transform=mult(model_transform, translation(0, 0.5, 0));
         model_transform=mult(model_transform, rotation(90, -1, 0, 0));
-        model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-        this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
+        model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
+        this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
 
         for (var i = 0; i < 7; i++) {
-          model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1));
+          model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
           model_transform=mult(model_transform, translation(0, 0, 0.5));
           model_transform=mult(model_transform, rotation(5*Math.sin(t), 0, -1, 0));
           model_transform=mult(model_transform, translation(0, 0, 0.5));
-          model_transform=mult(model_transform, scale(0.2, 0.2, 1));
-          this.shapes.trunk.draw(graphics_state, model_transform, this.orangePlastic);
+          model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
+          this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
         } 
 
         //The follicle
-        model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1));
+        model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
         model_transform=mult(model_transform, translation(0, 0, 2.5));
         model_transform=mult(model_transform, scale(-2, 2, 2));
         this.shapes.sphere.draw(graphics_state, model_transform, this.redPlastic);
-
        
-        bee_model=mult(origin_model, scale(0.7,0.7,0.7));
+        var bee_model=mult(origin_model, scale(0.7,0.7,0.7));
         bee_model=mult(bee_model, translation(0, Math.sin(t*5), 0));
         bee_model=mult(bee_model, rotation(-t*50, 0, 1, 0));
 
-        // Draw Bee Body
-        model_transform=mult(bee_model, translation(-4.0, 1, 10));
-        body_origin=model_transform; 
-        model_transform=mult(model_transform, scale(1.5, 1, 1));
-        this.shapes.cube.draw(graphics_state, model_transform, this.purplePlastic);
-
-        // Draw Bee ass
-        model_transform=mult(body_origin, translation(4.0, 0, 0));
-        model_transform=mult(model_transform, scale(2.5, 1, 1));
-        this.shapes.sphere.draw(graphics_state, model_transform, this.blueGlass);
-
-        //Draw Bee Head
-        model_transform=mult(model_transform, scale(1/2.5, 1, 1));  
-        model_transform=mult(model_transform, translation(-6.5, 0, 0));
-        this.shapes.sphere.draw(graphics_state, model_transform, this.greyPlastic);
-
-        //Draw Bee Left Wing
-        var left_wing_hinge=mult(body_origin, translation(0, 1, 1));
-        left_wing_hinge=mult(left_wing_hinge, rotation(30*Math.cos(t*1000), -1, 0, 0))
-        model_transform=mult(left_wing_hinge, translation(0, 0, 3));
-        model_transform=mult(model_transform, scale(1, 0.1, 3));
-        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-        //Draw Bee Right Wing
-        var right_wing_hinge=mult(body_origin, translation(0, 1, -1));
-        right_wing_hinge=mult(right_wing_hinge, rotation(30*Math.cos(t*1000), 1, 0, 0))
-        model_transform=mult(right_wing_hinge, translation(0, 0, -3));
-        model_transform=mult(model_transform, scale(1, 0.1, 3));
-        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
+        // // Draw Bee
+        var body_origin=this.draw_bee(graphics_state, bee_model);
+        
         //Left legs
         this.draw_legs(graphics_state, body_origin, 0.8, -1, 1);
         this.draw_legs(graphics_state, body_origin, 0, -1, 1);
@@ -180,48 +186,6 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
         this.draw_legs(graphics_state, body_origin, 0.8, 1, -1);
         this.draw_legs(graphics_state, body_origin, 0, 1, -1);
         this.draw_legs(graphics_state, body_origin, -0.8, 1, -1);
-        // var left_leg_hinge=mult(body_origin, translation(0.8, -1, 1));
-        // left_leg_hinge=mult(left_leg_hinge, rotation(45*Math.abs(Math.sin(t)), 1, 0, 0)); 
-        // model_transform=mult(left_leg_hinge, translation(0,-.707, .707));
-        // model_transform=mult(model_transform, rotation(45, 1, 0, 0)); 
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-        // model_transform=mult(left_leg_hinge, translation(0, -2.414, 1.414));
-        // model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-
-        // model_transform=mult(body_origin, translation(0,-1.707, 1.707));
-        // left_leg_hinge=mult(body_origin, translation(0, -1, 1));
-        // model_transform=mult(model_transform, rotation(45, 1, 0, 0)); 
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-        // model_transform=mult(body_origin, translation(-0.8,-1.707, 1.707));
-        // left_leg_hinge=mult(body_origin, translation(-0.8, -1, 1));
-        // model_transform=mult(model_transform, rotation(45, 1, 0, 0)); 
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-        // //right legs
-        // var right_leg_hinge=mult(body_origin, translation(0.8,-1.707, -1.707));
-        // model_transform=mult(right_leg_hinge, rotation(-45, 1, 0, 0)); 
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-        // var right_leg_hinge=mult(body_origin, translation(0,-1.707, -1.707));
-        // model_transform=mult(right_leg_hinge, rotation(-45, 1, 0, 0)); 
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-        // var right_leg_hinge=mult(body_origin, translation(-0.8,-1.707, -1.707));
-        // model_transform=mult(right_leg_hinge, rotation(-45, 1, 0, 0)); 
-        // model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-        // this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-
-
       }
   }, Scene_Component );
 
