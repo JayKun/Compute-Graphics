@@ -89,7 +89,7 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
         model_transform=mult(model_transform, scale(1.5, 1, 1));
         this.shapes.cube.draw(graphics_state, model_transform, this.purplePlastic);
 
-        // Draw Bee ass
+        // Draw Bee Ass
         model_transform=mult(body_origin, translation(4.0, 0, 0));
         model_transform=mult(model_transform, scale(2.5, 1, 1));
         this.shapes.sphere.draw(graphics_state, model_transform, this.blueGlass);
@@ -118,13 +118,15 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
       'draw_legs'(graphics_state, model_state, x, y, z)
       {
         var t = graphics_state.animation_time/1000;
-        var left_leg_hinge=mult(model_state, translation(x, -1, z));
-        left_leg_hinge=mult(left_leg_hinge, rotation(z*45*Math.abs(Math.sin(t)), 1, 0, 0)); 
-        var model_transform=mult(left_leg_hinge, translation(0,-.707, z*.707));
+        var upper_leg_hinge=mult(model_state, translation(x, -1, z));
+        upper_leg_hinge=mult(upper_leg_hinge, rotation(z*45*Math.abs(Math.sin(t)), 1, 0, 0)); 
+        var model_transform=mult(upper_leg_hinge, translation(0,-.707, z*.707));
         model_transform=mult(model_transform, rotation(45, z, 0, 0)); 
         model_transform=mult(model_transform, scale(0.15, 0.15, 1));
         this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-        model_transform=mult(left_leg_hinge, translation(0, -2.414, z*1.414));
+        var lower_leg_hinge=mult(upper_leg_hinge, translation(0, -1.414, z*1.414));
+        lower_leg_hinge= mult(lower_leg_hinge, rotation(z*30*Math.abs(Math.sin(t)), 1, 0, 0));
+        model_transform=mult(lower_leg_hinge, translation(0, -1, 0));
         model_transform=mult(model_transform, rotation(90, 1, 0, 0));
         model_transform=mult(model_transform, scale(0.15, 0.15, 1));
         this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
