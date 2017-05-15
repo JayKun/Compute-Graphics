@@ -65,15 +65,23 @@ Declare_Any_Class( "Example_Animation",  // An example of a Scene_Component that
   
 Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object using a "model_transform" matrix and post-multiplication.
   { 'construct'( context )
-      { var shapes = { "ball" : new        Cube(), 
+      { 
+      var shapes = {   "dummy": new Shape_From_File( "dummy_obj.obj" ),
                        "lol": new Grid_Sphere(30, 30 ),
+                       "arrow_body":new Capped_Cylinder(20,20),
                        "ground": new Square() ,
                        "trunk": new Capped_Cylinder(20, 20),
-                       "test": new Whatever()
+                       "arrow_head": new Cube(),
+                       "test": new Surface_Of_Revolution( 10, 10, [ vec3( 1, 0, 0 ), vec3( 0, 1, 0 ), vec3( 0, 0, 1 ), vec3( 0, 0, 2 ) ], 360, [ [ 0, 7 ] [ 0, 7 ] ] ) 
                    };
         this.submit_shapes( context, shapes );
         
-        this.define_data_members( { yellow_clay: context.shaders_in_use["Phong_Model"].material( Color(  1,  1, .3, 1 ), .2, 1, .7, 40 ),
+        this.define_data_members( { 
+                                    x: -1,
+                                    y: 0,
+                                    xp: -1,
+                                    shoot:false,
+                                    yellow_clay: context.shaders_in_use["Phong_Model"].material( Color(  1,  1, .3, 1 ), .2, 1, .7, 40 ),
                                     brown_clay: context.shaders_in_use["Phong_Model"].material( Color( .1, .5, .3, 1 ), .2, 1,  1, 40 ), 
                                     orangePlastic  : context.shaders_in_use["Phong_Model" ].material( Color( 1,.5,.3, 1 ), .4, .8, .4, 20 ),
                                     brownPlastic  : context.shaders_in_use["Phong_Model" ].material( Color( .82,.7,.55, 1 ), .4, .8, .4, 20 ),
@@ -81,121 +89,66 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
                                     redPlastic: context.shaders_in_use["Phong_Model" ].material( Color( 2,.2,.3, 1 ), .4, .8, .4, 20 ),
                                     fire         : context.shaders_in_use["Funny_Shader"].material(),
                                     purplePlastic: context.shaders_in_use["Phong_Model" ].material( Color( .9,.5,.9, 1 ), .4, .4, .8, 40 ),
-                                    greyPlastic  : context.shaders_in_use["Phong_Model" ].material( Color( .5,.5,.5, 1 ), .4, .8, .4, 20 )} );
+                                    wood  : context.shaders_in_use["Phong_Model" ].material( Color( .2,.23,.6, 0 ), 1, 0, 0, 40, context.textures_in_use["dummy_wood.jpg"]),
+                                    greyPlastic  : context.shaders_in_use["Phong_Model" ].material( Color( .2,.23,.6, 0 ), 1, 0, 0, 40, context.textures_in_use["stars.png"] ) } );
       },
-      // 'draw_bee'(graphics_state, model_state){
-      //   var t = graphics_state.animation_time/1000;
-      //   // Draw Bee Body
-      //   var model_transform=mult(model_state, translation(-4.0, 1, 10));
-      //   var body_origin=model_transform; 
-      //   model_transform=mult(model_transform, scale(1.5, 1, 1));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.purplePlastic);
+      'init_keys'( controls )   // init_keys():  Define any extra keyboard shortcuts here
+      { 
+        controls.add( "l", this, function() { this.x +=1; } ); controls.add( "j", this, function() { this.x -=1; } );
+        controls.add( "i", this, function() { this.y +=1; } ); controls.add( "k", this, function() { this.y -=1; } );
+        controls.add( "0", this, function() { this.shoot = true; } );     controls.add( "0", this, function() { this.shoot =  false; }, {'type':'keyup'} );
 
-      //   // Draw Bee Ass
-      //   model_transform=mult(body_origin, translation(4.0, 0, 0));
-      //   model_transform=mult(model_transform, scale(2.5, 1, 1));
-      //   this.shapes.sphere.draw(graphics_state, model_transform, this.blueGlass);
-
-      //   //Draw Bee Head
-      //   model_transform=mult(model_transform, scale(1/2.5, 1, 1));  
-      //   model_transform=mult(model_transform, translation(-6.5, 0, 0));
-      //   this.shapes.sphere.draw(graphics_state, model_transform, this.greyPlastic);
-
-      //   //Draw Bee Left Wing
-      //   var left_wing_hinge=mult(body_origin, translation(0, 1, 1));
-      //   left_wing_hinge=mult(left_wing_hinge, rotation(30*Math.cos(t*1000), -1, 0, 0))
-      //   model_transform=mult(left_wing_hinge, translation(0, 0, 3));
-      //   model_transform=mult(model_transform, scale(1, 0.1, 3));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-      //   //Draw Bee Right Wing
-      //   var right_wing_hinge=mult(body_origin, translation(0, 1, -1));
-      //   right_wing_hinge=mult(right_wing_hinge, rotation(30*Math.cos(t*1000), 1, 0, 0))
-      //   model_transform=mult(right_wing_hinge, translation(0, 0, -3));
-      //   model_transform=mult(model_transform, scale(1, 0.1, 3));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-
-      //   return body_origin;
-      // },
-      // 'draw_legs'(graphics_state, model_state, x, y, z)
-      // {
-      //   var t = graphics_state.animation_time/1000;
-      //   var upper_leg_hinge=mult(model_state, translation(x, -1, z));
-      //   upper_leg_hinge=mult(upper_leg_hinge, rotation(z*45*Math.abs(Math.sin(t)), 1, 0, 0)); 
-      //   var model_transform=mult(upper_leg_hinge, translation(0,-.707, z*.707));
-      //   model_transform=mult(model_transform, rotation(45, z, 0, 0)); 
-      //   model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-      //   var lower_leg_hinge=mult(upper_leg_hinge, translation(0, -1.414, z*1.414));
-      //   lower_leg_hinge= mult(lower_leg_hinge, rotation(z*30*Math.abs(Math.sin(t)), 1, 0, 0));
-      //   model_transform=mult(lower_leg_hinge, translation(0, -1, 0));
-      //   model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-      //   model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-      // },
+      },
     'display'( graphics_state )
-      { var model_transform = identity(); 
-		this.shapes.lol.draw( graphics_state, mult(translation( 0, 0, -1), scale(1, 1, 1)), this.redPlastic);
-		this.shapes.lol.draw( graphics_state, mult(translation( 0, 0, -5), scale(1, 1, 1)), this.blueGlass);
-		//this.shapes.ball.draw( graphics_state, translation( 0, 0, -3), this.blueGlass);
+      { 
+
+    /**GROUND**/    
+    var model_transform = identity(); 
+   this.shapes.test.draw(graphics_state, mult(model_transform, scale(1, 1, 1)), this.brown_clay);
+    model_transform=mult(model_transform, translation(0,-5,0));
+    model_transform=mult(model_transform, rotation(90,1,0,0));
+    this.shapes.ground.draw(graphics_state, mult(model_transform, scale(30, 30, 50)), this.brown_clay);
+
+    /**DUMMY**/
+    model_transform=mult(rotation(90, 1, 0 ,0 ),translation(3, 0, 0)); 
+    this.shapes.dummy.draw( graphics_state, mult( model_transform, rotation( -90, 1, 0, 0 ) ), this.wood);
+		
+    /**BOW**/
+
+
+
+    /**ARROW**/
+    model_transform=translation( this.x + 1, this.y-3, 12);
+    model_transform=mult(model_transform, rotation(180, 0, 1, 0));
+    this.shapes.arrow_head.draw( graphics_state, mult(model_transform, scale(.25, .25, .25)), this.greyPlastic);
+
+    model_transform=mult(model_transform,translation(0,0,-2.5));
+    this.shapes.arrow_body.draw(graphics_state, mult(model_transform, scale(.1, .1, 5)), this.wood);
+
+    /**CAMERA**/
+    var eye=vec3(this.x+1, this.y+1, 30);
+    var at=vec3(this.x+1,this.y+1,10);
+    var up = vec3(0, 1, 0);
+    graphics_state.camera_transform = lookAt(eye, at, up);
+
 		// if( ( graphics_state.animation_time / 1000 ) % 2 < 1 ) // (alternating each second)
-			graphics_state.camera_transform = lookAt( [0,0,10], [1,1,5], [0,1,0] ); // Pass in eye position, at
+		// 	graphics_state.camera_transform = lookAt( [0,0,10], [1,1,5], [0,1,0] ); // Pass in eye position, at
 		// else // position, and up vector.
-			//graphics_state.camera_transform = lookAt( [1,0,0], [0,0,-4], [0,1,0] );
-      //   var t = graphics_state.animation_time/1000;
-      //   var model_transform = identity();             // We have to reset model_transform every frame
-          
+		//graphics_state.camera_transform = lookAt( [1,0,0], [0,0,-4], [0,1,0] );
+    
+    var lala= false;
+    if(this.shoot)
+      lala=true;
+    if(lala)
+      {
+        this.xp=this.x;
+        this.shapes.ground.draw( graphics_state, mult(translation( this.xp+(graphics_state.animation_time/2)%10, this.y , 0), scale(0.1, 0.1, 0.1)), this.redPlastic);
+        this.xp++;
+      }
+        
         graphics_state.lights = [ new Light( vec4(  0,  30,  34, 1 ), Color( 0, .4, 0, 1 ), 100 ),
                                   new Light( vec4( -10, -20, -14, 0 ), Color( 1, 1, .3, 1 ), 100    ) ];
 
-      //   origin_model=model_transform;
-
-      //   // The ground plane
-      //   model_transform=mult(model_transform, translation(0, -4, 0));
-      //   ground_origin=model_transform;
-      //   //ground_origin=mult(ground_origin, rotation(30*Math.sin(t), 0, 0, 1));
-      //   model_transform=mult(model_transform, rotation(90, 1, 0 , 0));
-      //   model_transform=mult(model_transform, scale(20,20,20));
-      //   this.shapes.ground.draw(graphics_state, model_transform, this.brown_clay);  
-
-      //   // Trunk set up
-      //   model_transform=mult(ground_origin, rotation(5*Math.sin(t), 0, 0 ,1));
-      //   model_transform=mult(model_transform, translation(0, 0.5, 0));
-      //   model_transform=mult(model_transform, rotation(90, -1, 0, 0));
-      //   model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
-
-      //   for (var i = 0; i < 7; i++) {
-      //     model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
-      //     model_transform=mult(model_transform, translation(0, 0, 0.5));
-      //     model_transform=mult(model_transform, rotation(5*Math.sin(t), 0, -1, 0));
-      //     model_transform=mult(model_transform, translation(0, 0, 0.5));
-      //     model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
-      //     this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
-      //   } 
-
-      //   //The follicle
-      //   model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
-      //   model_transform=mult(model_transform, translation(0, 0, 2.5));
-      //   model_transform=mult(model_transform, scale(-2, 2, 2));
-      //   this.shapes.sphere.draw(graphics_state, model_transform, this.redPlastic);
-       
-      //   var bee_model=mult(origin_model, scale(0.7,0.7,0.7));
-      //   bee_model=mult(bee_model, translation(0, Math.sin(t*5), 0));
-      //   bee_model=mult(bee_model, rotation(-t*50, 0, 1, 0));
-
-      //   // // Draw Bee
-      //   var body_origin=this.draw_bee(graphics_state, bee_model);
-        
-      //   //Left legs
-      //   this.draw_legs(graphics_state, body_origin, 0.8, -1, 1);
-      //   this.draw_legs(graphics_state, body_origin, 0, -1, 1);
-      //   this.draw_legs(graphics_state, body_origin, -0.8, -1, 1);
-
-      //   //Right legs
-      //   this.draw_legs(graphics_state, body_origin, 0.8, 1, -1);
-      //   this.draw_legs(graphics_state, body_origin, 0, 1, -1);
-      //   this.draw_legs(graphics_state, body_origin, -0.8, 1, -1);
       }
   }, Scene_Component );
 
@@ -516,3 +469,31 @@ Declare_Any_Class( "Object_Collision_Scene",    // Scenario 2: Detect when some 
         }   
       }
   }, Simulation_Scene_Superclass );
+
+// Declare_Any_Class( "Superclass",
+//   { 'construct'( context )
+//       { context.globals.animate = true;
+//         this.define_data_members( { bodies: [], shader: context.shaders_in_use["Phong_Model"], stars: context.textures_in_use["stars.png"] } );
+        
+//         var shapes = { "ground"      : new Square(),
+//                        "arrows"      : new Axis_Arrows(),
+//                        "capped"      : new Capped_Cylinder( 4, 12 ),
+//                        "axis"        : new Axis_Arrows(),
+//                        "prism"       :     Capped_Cylinder   .prototype.auto_flat_shaded_version( 10, 10 ),
+//                        "gem"         :     Subdivision_Sphere.prototype.auto_flat_shaded_version( 2 ),
+//                        "gem2"        :     Torus             .prototype.auto_flat_shaded_version( 20, 20 ) };
+//         this.submit_shapes( context, shapes );
+//       },
+//     'random_shape'() { return Object.values( this.shapes )[ Math.floor( 7*Math.random() ) ] },
+//     'random_material'() { return this.shader.material( Color( 1,Math.random(),Math.random(),1 ), .1, 1, 1, 40, this.stars ) },
+//     'display'( graphics_state )
+//       { graphics_state.lights = [ new Light( vec4(5,1,1,0), Color( 1, 1, 1, 1 ), 10000 ) ];
+                                              
+//         if( Math.random() < .02 ) this.bodies.splice( 0, this.bodies.length/4 ); // Sometimes we delete some so they can re-generate as new ones
+//         for( let b of this.bodies )
+//         { b.shape.draw( graphics_state, mult( b.location_matrix, scale( b.scale ) ), b.material ); // Draw each shape at its current location 
+//           b.advance( b, graphics_state.animation_delta_time );
+//         }
+//         this.simulate();    // This is an abstract class; call the subclass's version
+//       },
+//   }, Scene_Component );

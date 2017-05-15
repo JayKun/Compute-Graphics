@@ -65,12 +65,10 @@ Declare_Any_Class( "Example_Animation",  // An example of a Scene_Component that
   
 Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object using a "model_transform" matrix and post-multiplication.
   { 'construct'( context )
-      { var shapes = { "ball" : new        Cube(), 
-                       "lol": new Grid_Sphere(30, 30 ),
+      { var shapes = { "cube" : new        Cube(), 
+                       "sphere": new Grid_Sphere(30, 30 ),
                        "ground": new Square() ,
-                       "trunk": new Capped_Cylinder(20, 20),
-                       "test": new Whatever()
-                   };
+                       "trunk": new Capped_Cylinder(20, 20)};
         this.submit_shapes( context, shapes );
         
         this.define_data_members( { yellow_clay: context.shaders_in_use["Phong_Model"].material( Color(  1,  1, .3, 1 ), .2, 1, .7, 40 ),
@@ -83,119 +81,113 @@ Declare_Any_Class( "Bee_Scene",  // An example of drawing a hierarchical object 
                                     purplePlastic: context.shaders_in_use["Phong_Model" ].material( Color( .9,.5,.9, 1 ), .4, .4, .8, 40 ),
                                     greyPlastic  : context.shaders_in_use["Phong_Model" ].material( Color( .5,.5,.5, 1 ), .4, .8, .4, 20 )} );
       },
-      // 'draw_bee'(graphics_state, model_state){
-      //   var t = graphics_state.animation_time/1000;
-      //   // Draw Bee Body
-      //   var model_transform=mult(model_state, translation(-4.0, 1, 10));
-      //   var body_origin=model_transform; 
-      //   model_transform=mult(model_transform, scale(1.5, 1, 1));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.purplePlastic);
+      'draw_bee'(graphics_state, model_state){
+        var t = graphics_state.animation_time/1000;
+        // Draw Bee Body
+        var model_transform=mult(model_state, translation(-4.0, 1, 10));
+        var body_origin=model_transform; 
+        model_transform=mult(model_transform, scale(1.5, 1, 1));
+        this.shapes.cube.draw(graphics_state, model_transform, this.purplePlastic);
 
-      //   // Draw Bee Ass
-      //   model_transform=mult(body_origin, translation(4.0, 0, 0));
-      //   model_transform=mult(model_transform, scale(2.5, 1, 1));
-      //   this.shapes.sphere.draw(graphics_state, model_transform, this.blueGlass);
+        // Draw Bee Ass
+        model_transform=mult(body_origin, translation(4.0, 0, 0));
+        model_transform=mult(model_transform, scale(2.5, 1, 1));
+        this.shapes.sphere.draw(graphics_state, model_transform, this.blueGlass);
 
-      //   //Draw Bee Head
-      //   model_transform=mult(model_transform, scale(1/2.5, 1, 1));  
-      //   model_transform=mult(model_transform, translation(-6.5, 0, 0));
-      //   this.shapes.sphere.draw(graphics_state, model_transform, this.greyPlastic);
+        //Draw Bee Head
+        model_transform=mult(model_transform, scale(1/2.5, 1, 1));  
+        model_transform=mult(model_transform, translation(-6.5, 0, 0));
+        this.shapes.sphere.draw(graphics_state, model_transform, this.greyPlastic);
 
-      //   //Draw Bee Left Wing
-      //   var left_wing_hinge=mult(body_origin, translation(0, 1, 1));
-      //   left_wing_hinge=mult(left_wing_hinge, rotation(30*Math.cos(t*1000), -1, 0, 0))
-      //   model_transform=mult(left_wing_hinge, translation(0, 0, 3));
-      //   model_transform=mult(model_transform, scale(1, 0.1, 3));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
+        //Draw Bee Left Wing
+        var left_wing_hinge=mult(body_origin, translation(0, 1, 1));
+        left_wing_hinge=mult(left_wing_hinge, rotation(30*Math.cos(t*1000), -1, 0, 0))
+        model_transform=mult(left_wing_hinge, translation(0, 0, 3));
+        model_transform=mult(model_transform, scale(1, 0.1, 3));
+        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
 
-      //   //Draw Bee Right Wing
-      //   var right_wing_hinge=mult(body_origin, translation(0, 1, -1));
-      //   right_wing_hinge=mult(right_wing_hinge, rotation(30*Math.cos(t*1000), 1, 0, 0))
-      //   model_transform=mult(right_wing_hinge, translation(0, 0, -3));
-      //   model_transform=mult(model_transform, scale(1, 0.1, 3));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
+        //Draw Bee Right Wing
+        var right_wing_hinge=mult(body_origin, translation(0, 1, -1));
+        right_wing_hinge=mult(right_wing_hinge, rotation(30*Math.cos(t*1000), 1, 0, 0))
+        model_transform=mult(right_wing_hinge, translation(0, 0, -3));
+        model_transform=mult(model_transform, scale(1, 0.1, 3));
+        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
 
-      //   return body_origin;
-      // },
-      // 'draw_legs'(graphics_state, model_state, x, y, z)
-      // {
-      //   var t = graphics_state.animation_time/1000;
-      //   var upper_leg_hinge=mult(model_state, translation(x, -1, z));
-      //   upper_leg_hinge=mult(upper_leg_hinge, rotation(z*45*Math.abs(Math.sin(t)), 1, 0, 0)); 
-      //   var model_transform=mult(upper_leg_hinge, translation(0,-.707, z*.707));
-      //   model_transform=mult(model_transform, rotation(45, z, 0, 0)); 
-      //   model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-      //   var lower_leg_hinge=mult(upper_leg_hinge, translation(0, -1.414, z*1.414));
-      //   lower_leg_hinge= mult(lower_leg_hinge, rotation(z*30*Math.abs(Math.sin(t)), 1, 0, 0));
-      //   model_transform=mult(lower_leg_hinge, translation(0, -1, 0));
-      //   model_transform=mult(model_transform, rotation(90, 1, 0, 0));
-      //   model_transform=mult(model_transform, scale(0.15, 0.15, 1));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
-      // },
+        return body_origin;
+      },
+      'draw_legs'(graphics_state, model_state, x, y, z)
+      {
+        var t = graphics_state.animation_time/1000;
+        var upper_leg_hinge=mult(model_state, translation(x, -1, z));
+        upper_leg_hinge=mult(upper_leg_hinge, rotation(z*45*Math.abs(Math.sin(t)), 1, 0, 0)); 
+        var model_transform=mult(upper_leg_hinge, translation(0,-.707, z*.707));
+        model_transform=mult(model_transform, rotation(45, z, 0, 0)); 
+        model_transform=mult(model_transform, scale(0.15, 0.15, 1));
+        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
+        var lower_leg_hinge=mult(upper_leg_hinge, translation(0, -1.414, z*1.414));
+        lower_leg_hinge= mult(lower_leg_hinge, rotation(z*30*Math.abs(Math.sin(t)), 1, 0, 0));
+        model_transform=mult(lower_leg_hinge, translation(0, -1, 0));
+        model_transform=mult(model_transform, rotation(90, 1, 0, 0));
+        model_transform=mult(model_transform, scale(0.15, 0.15, 1));
+        this.shapes.cube.draw(graphics_state, model_transform, this.greyPlastic);
+      },
     'display'( graphics_state )
-      { var model_transform = identity(); 
-		this.shapes.lol.draw( graphics_state, mult(translation( 0, 0, -1), scale(1, 1, 1)), this.redPlastic);
-		this.shapes.lol.draw( graphics_state, mult(translation( 0, 0, -5), scale(1, 1, 1)), this.blueGlass);
-		//this.shapes.ball.draw( graphics_state, translation( 0, 0, -3), this.blueGlass);
-		// if( ( graphics_state.animation_time / 1000 ) % 2 < 1 ) // (alternating each second)
-			graphics_state.camera_transform = lookAt( [0,0,10], [1,1,5], [0,1,0] ); // Pass in eye position, at
-		// else // position, and up vector.
-			//graphics_state.camera_transform = lookAt( [1,0,0], [0,0,-4], [0,1,0] );
-      //   var t = graphics_state.animation_time/1000;
-      //   var model_transform = identity();             // We have to reset model_transform every frame
+      { 
+        var t = graphics_state.animation_time/1000;
+        var model_transform = identity();             // We have to reset model_transform every frame
           
-        graphics_state.lights = [ new Light( vec4(  0,  30,  34, 1 ), Color( 0, .4, 0, 1 ), 100 ),
+        graphics_state.lights = [ new Light( vec4(  0,  30,  34, 1 ), Color( 0, .4, 0, 1 ), 100000 ),
                                   new Light( vec4( -10, -20, -14, 0 ), Color( 1, 1, .3, 1 ), 100    ) ];
 
-      //   origin_model=model_transform;
 
-      //   // The ground plane
-      //   model_transform=mult(model_transform, translation(0, -4, 0));
-      //   ground_origin=model_transform;
-      //   //ground_origin=mult(ground_origin, rotation(30*Math.sin(t), 0, 0, 1));
-      //   model_transform=mult(model_transform, rotation(90, 1, 0 , 0));
-      //   model_transform=mult(model_transform, scale(20,20,20));
-      //   this.shapes.ground.draw(graphics_state, model_transform, this.brown_clay);  
+        origin_model=model_transform;
 
-      //   // Trunk set up
-      //   model_transform=mult(ground_origin, rotation(5*Math.sin(t), 0, 0 ,1));
-      //   model_transform=mult(model_transform, translation(0, 0.5, 0));
-      //   model_transform=mult(model_transform, rotation(90, -1, 0, 0));
-      //   model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
-      //   this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
+        // The ground plane
+        model_transform=mult(model_transform, translation(0, -4, 0));
+        ground_origin=model_transform;
+        //ground_origin=mult(ground_origin, rotation(30*Math.sin(t), 0, 0, 1));
+        model_transform=mult(model_transform, rotation(90, 1, 0 , 0));
+        model_transform=mult(model_transform, scale(20,20,20));
+        this.shapes.ground.draw(graphics_state, model_transform, this.brown_clay);  
 
-      //   for (var i = 0; i < 7; i++) {
-      //     model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
-      //     model_transform=mult(model_transform, translation(0, 0, 0.5));
-      //     model_transform=mult(model_transform, rotation(5*Math.sin(t), 0, -1, 0));
-      //     model_transform=mult(model_transform, translation(0, 0, 0.5));
-      //     model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
-      //     this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
-      //   } 
+        // Trunk set up
+        model_transform=mult(ground_origin, rotation(5*Math.sin(t), 0, 0 ,1));
+        model_transform=mult(model_transform, translation(0, 0.5, 0));
+        model_transform=mult(model_transform, rotation(90, -1, 0, 0));
+        model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
+        this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
 
-      //   //The follicle
-      //   model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
-      //   model_transform=mult(model_transform, translation(0, 0, 2.5));
-      //   model_transform=mult(model_transform, scale(-2, 2, 2));
-      //   this.shapes.sphere.draw(graphics_state, model_transform, this.redPlastic);
+        for (var i = 0; i < 7; i++) {
+          model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
+          model_transform=mult(model_transform, translation(0, 0, 0.5));
+          model_transform=mult(model_transform, rotation(5*Math.sin(t), 0, -1, 0));
+          model_transform=mult(model_transform, translation(0, 0, 0.5));
+          model_transform=mult(model_transform, scale(0.2, 0.2, 0.5));
+          this.shapes.cube.draw(graphics_state, model_transform, this.orangePlastic);
+        } 
+
+        //The follicle
+        model_transform=mult(model_transform, scale(1/0.2, 1/0.2, 1/0.5));
+        model_transform=mult(model_transform, translation(0, 0, 2.5));
+        model_transform=mult(model_transform, scale(-2, 2, 2));
+        this.shapes.sphere.draw(graphics_state, model_transform, this.redPlastic);
        
-      //   var bee_model=mult(origin_model, scale(0.7,0.7,0.7));
-      //   bee_model=mult(bee_model, translation(0, Math.sin(t*5), 0));
-      //   bee_model=mult(bee_model, rotation(-t*50, 0, 1, 0));
+        var bee_model=mult(origin_model, scale(0.7,0.7,0.7));
+        bee_model=mult(bee_model, translation(0, Math.sin(t*5), 0));
+        bee_model=mult(bee_model, rotation(-t*50, 0, 1, 0));
 
-      //   // // Draw Bee
-      //   var body_origin=this.draw_bee(graphics_state, bee_model);
+        // // Draw Bee
+        var body_origin=this.draw_bee(graphics_state, bee_model);
         
-      //   //Left legs
-      //   this.draw_legs(graphics_state, body_origin, 0.8, -1, 1);
-      //   this.draw_legs(graphics_state, body_origin, 0, -1, 1);
-      //   this.draw_legs(graphics_state, body_origin, -0.8, -1, 1);
+        //Left legs
+        this.draw_legs(graphics_state, body_origin, 0.8, -1, 1);
+        this.draw_legs(graphics_state, body_origin, 0, -1, 1);
+        this.draw_legs(graphics_state, body_origin, -0.8, -1, 1);
 
-      //   //Right legs
-      //   this.draw_legs(graphics_state, body_origin, 0.8, 1, -1);
-      //   this.draw_legs(graphics_state, body_origin, 0, 1, -1);
-      //   this.draw_legs(graphics_state, body_origin, -0.8, 1, -1);
+        //Right legs
+        this.draw_legs(graphics_state, body_origin, 0.8, 1, -1);
+        this.draw_legs(graphics_state, body_origin, 0, 1, -1);
+        this.draw_legs(graphics_state, body_origin, -0.8, 1, -1);
       }
   }, Scene_Component );
 
@@ -243,12 +235,7 @@ Declare_Any_Class( "Debug_Screen",  // Debug_Screen - An example of a Scene_Comp
           this.shapes.debug_text.set_string( k );
           this.shapes.debug_text.draw( this.graphics_state, model_transform, this.text_material );  // Draw some UI text (the canvas's key controls)
         }
-                var eye=vec3(0, 0, 10);
-        var at=vec3(1,5,10);
-        var up = vec3(0, 0, 2);
-        lookAt(eye, at, up);
       }
-
   }, Scene_Component );
 
 Declare_Any_Class( "Example_Camera",                  // An example of a Scene_Component that our Canvas_Manager can manage.  Adds both first-person and
@@ -256,6 +243,7 @@ Declare_Any_Class( "Example_Camera",                  // An example of a Scene_C
       { // 1st parameter below is our starting camera matrix.  2nd is the projection:  The matrix that determines how depth is treated.  It projects 3D points onto a plane.
         context.globals.graphics_state.set( translation(0, 0,-25), perspective(45, context.width/context.height, .1, 1000), 0 );
         this.define_data_members( { graphics_state: context.globals.graphics_state, thrust: vec3(), origin: vec3( 0, 5, 0 ), looking: false } );
+
         // *** Mouse controls: ***
         this.mouse = { "from_center": vec2() };                           // Measure mouse steering, for rotating the flyaround camera:
         var mouse_position = function( e ) { return vec2( e.clientX - context.width/2, e.clientY - context.height/2 ); };   

@@ -28,27 +28,20 @@ Declare_Any_Class( "Triangle",    // First, the simplest possible Shape – one 
   }, Shape )
 
 //*****************Trying random shapes**********
-Declare_Any_Class("Whatever", 
-{
-  'populate'(){
-    this.positions=[vec3(2,0,0), vec3(-2,0,0), vec3(0,0,1), vec3(0,0,-1), vec3(0, 1, 0), vec3(0, -1, 0)];
-    this.normals        = [ vec3(0,0,1), vec3(0,0,1), vec3(0,0,1), vec3(0,0,1), vec3(0,0,1), vec3(0,0,1)  ];   // ...
-    this.texture_coords = [ vec2(0,0),   vec2(1,0),   vec2(0,1),vec2(0,0),   vec2(1,0),   vec2(0,1)    ];   // ...
-    this.indices        = [ 0, 1, 2, 3, 4, 5, 6];                                 // Index into our vertices to connect them into a whole Tria
-  }
-}, Shape)
 
-  // *********** SQUARE ***********   
+  // *********** SQUARE ***********
 Declare_Any_Class( "Square",    // A square, demonstrating shared vertices.  On any planar surface, the interior edges don't make any important seams.
   { 'populate'()                // In these cases there's no reason not to re-use values of the common vertices between triangles.  This makes all the
       {                         // vertex arrays (position, normals, etc) smaller and more cache friendly.
-        this.positions     .push( vec3(-5,-1,0), vec3(1,-1,0), vec3(-5,1,0), vec3(1,1,0), vec3(-7, 0, 0)); // Specify the 4 vertices -- the point cloud that our Square needs.
-        this.normals       .push( vec3(0,1,1), vec3(0,0,1), vec3(0,5,1), vec3(0,5,1), vec3(5,0,1) );     // ...
-        this.texture_coords.push( vec2(0,0),   vec3(1,0),   vec2(0,1),   vec2(1,1), vec2(0,0)  );     // ...
-        this.indices       .push( 0, 1, 2,     1, 3, 2,   0,2,4 );                                   // Two triangles this time, indexing into four distinct vertices.
+        this.positions     .push( vec3(-1,-1,0), vec3(1,-1,0), vec3(-1,1,0), vec3(1,1,0) ); // Specify the 4 vertices -- the point cloud that our Square needs.
+        this.normals       .push( vec3(1,0,1), vec3(0,1,1), vec3(0,5,1), vec3(0,4,0 ) );     // ...
+        this.texture_coords.push( vec2(0,0),   vec2(1,0),   vec2(0,1),   vec2(1,1)   );     // ...
+        this.indices       .push( 0, 1, 2,     1, 3, 2 );                                   // Two triangles this time, indexing into four distinct vertices.
       }
   }, Shape )
 
+
+  
   // *********** TETRAHEDRON ***********
 Declare_Any_Class( "Tetrahedron",              // A demo of flat vs smooth shading.  Also our first 3D, non-planar shape.
   { 'populate'( using_flat_shading ) // Takes a boolean argument
@@ -258,14 +251,35 @@ Declare_Any_Class( "Rounded_Capped_Cylinder",   // An alternative without three 
           [ rows, columns, [ vec3( 0, 0, .5 ), vec3( 1, 0, .5 ), vec3( 1, 0, -.5 ), vec3( 0, 0, -.5 ) ] ] ); } }, Shape ) 
     
 Declare_Any_Class( "Cube",    // A cube inserts six square strips into its lists.
-  { populate()  
-      { for( var i = 0; i < 3; i++ )                    
-          for( var j = 0; j < 2; j++ )
-          { var square_transform = mult( rotation( i == 0 ? 90 : 0, vec3( 1, 0, 0 ) ), rotation( 180 * j - ( i == 1 ? 90 : 0 ), vec3( 0, 1, 0 ) ) );
-                square_transform = mult( square_transform, translation(0, 0, 1) );
-            Square.prototype.insert_transformed_copy_into( this, [], square_transform );             
-          } 
-      } }, Shape )
+  {
+         populate()  
+      { 
+        var transform=translation(.5,0,0);
+        transform=mult(transform, translation(0, 0, Math.sin(radians(60)) ));
+        transform=mult(transform, rotation(60, 0, 1, 0));
+        Square.prototype.insert_transformed_copy_into( this, [], scale(1,.5,.5));
+        Square.prototype.insert_transformed_copy_into( this, [], mult(transform, scale(1, .5, .5)) );
+
+        transform=translation(-.5,0,0);
+        transform=mult(transform, translation(0, 0, Math.sin(radians(60)) ));
+        transform=mult(transform, rotation(-60, 0, 1, 0));
+        Square.prototype.insert_transformed_copy_into( this, [], mult(transform, scale(1, .5, .5)) );
+
+        transform=translation(0,.5,0);
+        transform=mult(transform, rotation(90, 1, 0, 0));
+        Triangle.prototype.insert_transformed_copy_into( this, [], mult(transform, scale(1, Math.tan(radians(60)), 1)) );
+        Triangle.prototype.insert_transformed_copy_into( this, [], mult(transform, scale(-1, Math.tan(radians(60)), 1)) );
+
+
+        transform=translation(0,-.5,0);
+        transform=mult(transform, rotation(90, 1, 0, 0));
+        Triangle.prototype.insert_transformed_copy_into( this, [], mult(transform, scale(1, Math.tan(radians(60)), 1)) );
+        Triangle.prototype.insert_transformed_copy_into( this, [], mult(transform, scale(-1, Math.tan(radians(60)), 1)) );
+
+
+
+      } 
+    },Shape )
   
 Declare_Any_Class( "Axis_Arrows",   // Made out of a lot of various primitives.
   { populate()  
@@ -324,3 +338,15 @@ Declare_Any_Class( "Text_Line", // Draws a rectangle textured with images of ASC
         gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texture_coords), gl.STATIC_DRAW );
       }
   }, Shape )
+
+
+// Declare_Any_Class( "Ramp",    // A cube inserts six square strips into its lists.
+//   { 
+//     populate()  
+//       { 
+//         var square_transform=scale(1,1,1);
+//         Square.prototype.insert_transformed_copy_into( this, [], square_transform );  
+//         square_transform=mult(translation(1, 0, 0), rotation(45, 0, 1, 0));
+//         //Square.prototype.insert_transformed_copy_into( this, [], square_transform );  
+//       } 
+//     },Shape )
